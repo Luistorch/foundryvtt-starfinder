@@ -439,6 +439,39 @@ function rollItemMacro(itemName) {
     return item.roll();
 }
 
+/**
+ * Shows all actor weapons of the one currently selected
+ */
+function showActorWeapons() {
+    const speaker = ChatMessage.getSpeaker();
+    let actor;
+    if (speaker.token) actor = game.actors.tokens[speaker.token];
+    if (!actor) actor = game.actors.get(speaker.actor);
+
+    let content = ``
+
+    // Create buttons
+    let buttons = []
+    for(const item of actor.items) {
+        if(item.data.type == 'weapon') {
+            console.log(item.data)
+            content += `<div style="display: flex; align-items:center;">
+            <img style="width: 60px;" src="${item.data.img}">`
+            if(item.data.hasAttack) {
+                content += `<i class="fa fa-check" aria-hidden="true"></i>`
+            }
+            content += `<button onClick="game.sfrpg.rollItemMacro('${item.data.name}')" type='submit'>${item.data.name}</button>
+            </div>`
+        }
+    }
+
+    const myDialog = new Dialog({
+        title: "Actor weapons",
+        content: content,
+        buttons: {}
+    }).render(true);
+}
+
 function setupHandlebars() {
     Handlebars.registerHelper("length", function (value) {
         if (value instanceof Array) {
